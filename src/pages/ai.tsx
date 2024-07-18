@@ -16,6 +16,7 @@ import { useAccount, useConnect, useWriteContract } from "wagmi";
 import ABI from "@/lib/abis/NFTFactory.json";
 import { injected } from "wagmi/connectors";
 import { cn } from "@/lib/utils";
+import { useEnterKeyListener } from "@/hooks/useEnterKeyListener";
 
 function AI() {
   const [turnType, setTurnType] = useState<TurnType>("do");
@@ -54,6 +55,36 @@ function AI() {
       setFetching(false);
     }
   }, []);
+
+  const sendCustomMessage = async () => {
+    if (!inputRef.current) return;
+
+    if (inputRef.current.value.trim() === "") return;
+
+    let content = "";
+
+    const value = inputRef.current.value;
+    switch (turnType) {
+      case "say":
+        content = `你说:“${value}”`;
+        break;
+      case "see":
+        content = `你看见了${value}`;
+        break;
+      case "do":
+      case "story":
+        content = value;
+        break;
+    }
+
+    const newMsg: Message[] = [...messages, { role: "user", content }];
+    setMessages(newMsg);
+    await sendMessage(newMsg);
+
+    inputRef.current.value = "";
+  };
+
+  useEnterKeyListener(() => sendCustomMessage());
 
   const generateNFT = async () => {
     if (!isConnected) {
@@ -155,38 +186,7 @@ function AI() {
               ref={inputRef}
               turnType={turnType}
               onChooseTurnType={(type) => setTurnType(type)}
-              onConfirm={async () => {
-                if (!inputRef.current) return;
-
-                if (inputRef.current.value.trim() === "") return;
-
-                let content = "";
-
-                const value = inputRef.current.value;
-                switch (turnType) {
-                  case "do":
-                    content = `你${value}`;
-                    break;
-                  case "say":
-                    content = `你说:“${value}”`;
-                    break;
-                  case "see":
-                    content = `你看见了${value}`;
-                    break;
-                  case "story":
-                    content = value;
-                    break;
-                }
-
-                const newMsg: Message[] = [
-                  ...messages,
-                  { role: "user", content },
-                ];
-                setMessages(newMsg);
-                await sendMessage(newMsg);
-
-                inputRef.current.value = "";
-              }}
+              onConfirm={() => sendCustomMessage()}
               onExit={() => setWriting(false)}
             />
           </motion.div>

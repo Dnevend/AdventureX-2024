@@ -27,16 +27,16 @@ export const WriteBar = forwardRef<
           <X />
         </Button>
         <Button size="sm" onClick={() => onChooseTurnType("do")}>
-          Do
+          发生
         </Button>
         <Button size="sm" onClick={() => onChooseTurnType("say")}>
-          Say
-        </Button>
-        <Button size="sm" onClick={() => onChooseTurnType("story")}>
-          Story
+          对话
         </Button>
         <Button size="sm" onClick={() => onChooseTurnType("see")}>
-          See
+          看见
+        </Button>
+        <Button size="sm" onClick={() => onChooseTurnType("story")}>
+          故事
         </Button>
       </div>
 
