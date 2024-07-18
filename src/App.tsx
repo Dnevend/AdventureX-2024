@@ -1,50 +1,20 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "./lib/utils";
 import http from "@/lib/http/axios";
-import { Input } from "./components/ui/input";
-import {
-  Send,
-  PenLine,
-  Wand,
-  Delete,
-  X,
-  Repeat,
-  FileCheck2,
-} from "lucide-react";
-import { Button } from "./components/ui/button";
 import { DEFAULT_MODEL } from "./const";
 import { ConnectKitButton } from "connectkit";
 import { IPFS_GATEWAY, pinJSONToIPFS } from "./lib/pinata";
 import { Typewriter } from "./components/Typewriter";
 import { motion } from "framer-motion";
-
-interface Message {
-  content: string;
-  role: "system" | "user" | "assistant";
-}
-
-interface ModelResponse {
-  choices: { finish_reason: string; index: number; message: Message }[];
-  created: number;
-  id: string;
-  model: string;
-}
-
-type TurnType = "do" | "say" | "story" | "see";
-
-const TurnPlaceholder: Record<TurnType, string> = {
-  do: "What do you do?",
-  say: "What do you say?",
-  story: "What happens next?",
-  see: "What do you see?",
-};
+import { OperateBar } from "./components/OperateBar";
+import { Message, ModelResponse, TurnType } from "./types/type";
+import { WriteBar } from "./components/WriteBar";
 
 function App() {
   const [turnType, setTurnType] = useState<TurnType>("do");
   const [fetching, setFetching] = useState<boolean>(false);
   const [writing, setWriting] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [input, setInput] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
 
   const sendMessage = useCallback(async (messages: Message[]) => {
@@ -131,57 +101,27 @@ function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex flex-wrap justify-center gap-2">
-              <Button size="sm" onClick={() => setWriting(true)}>
-                <PenLine className="w-4 h-4 mr-2" />
-                Take a turn
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => {
-                  sendMessage([...messages, { role: "user", content: "继续" }]);
-                }}
-              >
-                <Wand className="w-4 h-4 mr-2" />
-                Continue
-              </Button>
-              {messages[messages.length - 1]?.role === "assistant" && (
-                <Button
-                  size="sm"
-                  onClick={async () => {
-                    const retryMessages = [...messages];
-                    retryMessages.splice(-1);
-                    setMessages(retryMessages);
-                    await sendMessage(retryMessages);
-                  }}
-                >
-                  <Repeat className="w-4 h-4 mr-2" />
-                  Retry
-                </Button>
-              )}
-              {messages[messages.length - 1]?.role === "assistant" && (
-                <Button
-                  size="sm"
-                  onClick={async () => {
-                    const eraseMessages = [...messages];
-                    eraseMessages.splice(-2);
-                    setMessages(eraseMessages);
-                  }}
-                >
-                  <Delete className="w-4 h-4 mr-2" />
-                  Erase
-                </Button>
-              )}
-              {messages.length >= 2 && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => generateNFT()}
-                >
-                  <FileCheck2 />
-                </Button>
-              )}
-            </div>
+            <OperateBar
+              retryVisible={messages.length >= 2}
+              eraseVisible={messages.length >= 2}
+              generateNFTVisible={messages.length >= 2}
+              onTakeATurn={() => setWriting(true)}
+              onContinue={() => {
+                sendMessage([...messages, { role: "user", content: "继续" }]);
+              }}
+              onRetry={async () => {
+                const retryMessages = [...messages];
+                retryMessages.splice(-1);
+                setMessages(retryMessages);
+                await sendMessage(retryMessages);
+              }}
+              onErase={() => {
+                const eraseMessages = [...messages];
+                eraseMessages.splice(-2);
+                setMessages(eraseMessages);
+              }}
+              onGenerateNFT={() => generateNFT()}
+            />
           </motion.div>
         )}
 
@@ -192,55 +132,24 @@ function App() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="rounded-lg border bg-white bg-opacity-10 border-white p-2 mt-2">
-              <div className="flex space-x-2">
-                <Button
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => setWriting(false)}
-                >
-                  <X />
-                </Button>
-                <Button size="sm" onClick={() => setTurnType("do")}>
-                  Do
-                </Button>
-                <Button size="sm" onClick={() => setTurnType("say")}>
-                  Say
-                </Button>
-                <Button size="sm" onClick={() => setTurnType("story")}>
-                  Story
-                </Button>
-                <Button size="sm" onClick={() => setTurnType("see")}>
-                  See
-                </Button>
-              </div>
+            <WriteBar
+              ref={inputRef}
+              turnType={turnType}
+              onChooseTurnType={(type) => setTurnType(type)}
+              onConfirm={async () => {
+                if (!inputRef.current) return;
 
-              <div className="flex items-center space-x-2 mt-2">
-                <Input
-                  className="text-white"
-                  ref={inputRef}
-                  placeholder={TurnPlaceholder[turnType]}
-                  onChange={(e) => setInput(e.target.value)}
-                />
+                if (inputRef.current.value.trim() === "") return;
 
-                <Button size="sm">
-                  <Send
-                    onClick={async () => {
-                      if (input.trim() === "") return;
+                await sendMessage([
+                  ...messages,
+                  { role: "user", content: inputRef.current.value },
+                ]);
 
-                      await sendMessage([
-                        ...messages,
-                        { role: "user", content: input },
-                      ]);
-
-                      if (inputRef.current) {
-                        inputRef.current.value = "";
-                      }
-                    }}
-                  />
-                </Button>
-              </div>
-            </div>
+                inputRef.current.value = "";
+              }}
+              onExit={() => setWriting(false)}
+            />
           </motion.div>
         )}
       </section>
