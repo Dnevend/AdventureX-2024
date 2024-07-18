@@ -124,7 +124,10 @@ function AI() {
       <div className="fixed top-0 w-full h-36 bg-gradient-to-b from-slate-950 to-transparent" />
 
       <main className="w-full max-w-screen-md mx-auto text-white flex-1 px-4 pt-24">
-        <div className="flex flex-col gap-2">
+        <h1 className="text-white text-2xl font-bold text-center">
+          《仿生人会杀死电子羊吗？》
+        </h1>
+        <div className="flex flex-col gap-2 mt-4">
           {messages.map((msg) => {
             if (msg.role === "user" && msg.content !== "续写") {
               return (
@@ -170,8 +173,8 @@ function AI() {
             transition={{ duration: 0.5 }}
           >
             <OperateBar
-              retryVisible={messages.length >= 2}
-              eraseVisible={messages.length >= 2}
+              retryVisible={messages.length >= 4}
+              eraseVisible={messages.length >= 4}
               generateNFTVisible={messages.length >= 2}
               onTakeATurn={() => setWriting(true)}
               onContinue={() => {
