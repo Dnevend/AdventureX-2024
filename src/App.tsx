@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { cn } from "./lib/utils";
 import http from "@/lib/http/axios";
 import { Input } from "./components/ui/input";
-import { Send, PenLine, Wand, Delete, X } from "lucide-react";
+import { Send, PenLine, Wand, Delete, X, FileCheck2 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { DEFAULT_MODEL } from "./const";
 import { ConnectKitButton } from "connectkit";
+import { IPFS_GATEWAY, pinJSONToIPFS } from "./lib/pinata";
 
 interface Message {
   content: string;
@@ -64,43 +65,57 @@ function App() {
     }
   };
 
+  const generateNFT = async () => {
+    const res: { IpfsHash: string } = await pinJSONToIPFS(messages);
+    console.log("🐞 => onUploadIPFS => res:", IPFS_GATEWAY + res.IpfsHash);
+  };
+
   return (
     <div className="relative flex flex-col min-h-screen">
       <div className="absolute top-0 z-[-2] h-screen w-screen bg-neutral-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
 
-      <header className={cn("flex justify-between p-6 px-10")}>
+      <header className={cn("flex justify-between items-center p-6 px-4")}>
         <div className="text-white text-xl font-bold">丛生 · Cluster</div>
         <ConnectKitButton />
       </header>
 
       <main className="w-full max-w-screen-md mx-auto my-6 text-white flex-1 px-4">
-        {messages.map((msg) => {
-          if (msg.role === "assistant") {
-            return <p>{msg.content}</p>;
-          }
-        })}
+        <div className="flex flex-col gap-2">
+          {messages.map((msg) => {
+            if (msg.role === "assistant") {
+              return <p className=" indent-8">{msg.content}</p>;
+            }
+          })}
+        </div>
       </main>
 
-      <section className="w-full max-w-screen-md mx-auto py-4 px-4">
+      <section className="w-full max-w-screen-md mx-auto p-4">
         {!writing && (
-          <div className="flex space-x-2">
-            <Button onClick={() => setWriting(true)}>
-              <PenLine className="w-4 h-4 mr-2" />
-              Take a turn
-            </Button>
-            {messages[messages.length]?.role === "assistant" && (
-              <Button
-                onClick={() => {
-                  // TODO:
-                }}
-              >
-                <Wand className="w-4 h-4 mr-2" />
-                Retry
+          <div className="flex justify-between">
+            <div className="flex space-x-2">
+              <Button onClick={() => setWriting(true)}>
+                <PenLine className="w-4 h-4 mr-2" />
+                Take a turn
               </Button>
-            )}
-            <Button>
-              <Delete className="w-4 h-4 mr-2" />
-              Erase
+              {messages[messages.length]?.role === "assistant" && (
+                <Button
+                  onClick={() => {
+                    // TODO:
+                  }}
+                >
+                  <Wand className="w-4 h-4 mr-2" />
+                  Retry
+                </Button>
+              )}
+              <Button>
+                <Delete className="w-4 h-4 mr-2" />
+                Erase
+              </Button>
+            </div>
+
+            <Button onClick={() => generateNFT()}>
+              Done
+              <FileCheck2 />
             </Button>
           </div>
         )}
