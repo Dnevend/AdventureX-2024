@@ -10,7 +10,7 @@ export const config = createConfig(getDefaultConfig({
     },
 
     // Required API Keys
-    walletConnectProjectId: 'YOUR_WALLET_CONNECT_PROJECT_ID',
+    walletConnectProjectId: '6f730cb455c9bf56dcb5be6d03109a36',
 
     // Required App Info
     appName: "Cluster",

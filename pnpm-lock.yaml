@@ -19,6 +19,9 @@ dependencies:
   connectkit:
     specifier: ^1.8.2
     version: registry.npmmirror.com/connectkit@1.8.2(@babel/core@7.24.9)(@tanstack/react-query@5.51.5)(react-dom@18.3.1)(react-is@18.3.1)(react@18.3.1)(viem@2.17.5)(wagmi@2.11.2)
+  framer-motion:
+    specifier: ^11.3.6
+    version: registry.npmmirror.com/framer-motion@11.3.6(react-dom@18.3.1)(react@18.3.1)
   lucide-react:
     specifier: ^0.408.0
     version: registry.npmmirror.com/lucide-react@0.408.0(react@18.3.1)
@@ -6839,6 +6842,28 @@ packages:
     name: fraction.js
     version: 4.3.7
     dev: true
+
+  registry.npmmirror.com/framer-motion@11.3.6(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-olpX48qfoSIDjhw0RbolhOGBQmdMAXHHpSI0PFdTj5LeXChcf5F4ApShs0mQ6FPEPOj7dnEvSyB07UgRK5G9Jw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/framer-motion/-/framer-motion-11.3.6.tgz}
+    id: registry.npmmirror.com/framer-motion/11.3.6
+    name: framer-motion
+    version: 11.3.6
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+    dependencies:
+      react: registry.npmmirror.com/react@18.3.1
+      react-dom: registry.npmmirror.com/react-dom@18.3.1(react@18.3.1)
+      tslib: registry.npmmirror.com/tslib@2.6.3
+    dev: false
 
   registry.npmmirror.com/framer-motion@6.5.1(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-o1BGqqposwi7cgDrtg0dNONhkmPsUFDaLcKXigzuTFC5x58mE8iyTazxSudFzmT6MEyJKfjjU8ItoMe3W+3fiw==, registry: http://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/framer-motion/-/framer-motion-6.5.1.tgz}
