@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "./lib/utils";
 import http from "@/lib/http/axios";
-import { DEFAULT_MODEL } from "./const";
+import { CONTRACE_ADDRESS, DEFAULT_MODEL } from "./const";
 import { ConnectKitButton } from "connectkit";
 import { IPFS_GATEWAY, pinJSONToIPFS } from "./lib/pinata";
 import { Typewriter } from "./components/Typewriter";
@@ -9,6 +9,9 @@ import { motion } from "framer-motion";
 import { OperateBar } from "./components/OperateBar";
 import { Message, ModelResponse, TurnType } from "./types/type";
 import { WriteBar } from "./components/WriteBar";
+import { useAccount, useConnect, useWriteContract } from "wagmi";
+import ABI from "@/lib/abis/NFTFactory.json";
+import { injected } from "wagmi/connectors";
 
 function App() {
   const [turnType, setTurnType] = useState<TurnType>("do");
@@ -16,6 +19,10 @@ function App() {
   const [writing, setWriting] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+
+  const { connectAsync } = useConnect();
+  const { address, isConnected } = useAccount();
+  const { writeContractAsync } = useWriteContract();
 
   const sendMessage = useCallback(async (messages: Message[]) => {
     try {
@@ -47,8 +54,18 @@ function App() {
   }, [sendMessage]);
 
   const generateNFT = async () => {
+    if (!isConnected) {
+      await connectAsync({ connector: injected() });
+    }
     const res: { IpfsHash: string } = await pinJSONToIPFS(messages);
     console.log("🐞 => onUploadIPFS => res:", IPFS_GATEWAY + res.IpfsHash);
+    const txRes = await writeContractAsync({
+      address: CONTRACE_ADDRESS,
+      abi: ABI,
+      functionName: "createNFT",
+      args: [address, res.IpfsHash],
+    });
+    console.log("🐞 => generateNFT => txRes:", txRes);
   };
 
   return (
