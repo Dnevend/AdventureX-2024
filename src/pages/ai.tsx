@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import http from "@/lib/http/axios";
 import {
   CONTRACE_ADDRESS,
@@ -21,7 +21,13 @@ function AI() {
   const [fetching, setFetching] = useState<boolean>(false);
   const [writing, setWriting] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: "system",
+      content: AI_SYSTEM_PROMPT,
+    },
+    { role: "user", content: AI_USER_PROMPT },
+  ]);
 
   const { connectAsync } = useConnect();
   const { address, isConnected } = useAccount();
@@ -47,16 +53,6 @@ function AI() {
       setFetching(false);
     }
   }, []);
-
-  useEffect(() => {
-    sendMessage([
-      {
-        role: "system",
-        content: AI_SYSTEM_PROMPT,
-      },
-      { role: "user", content: AI_USER_PROMPT },
-    ]);
-  }, [sendMessage]);
 
   const generateNFT = async () => {
     if (!isConnected) {
