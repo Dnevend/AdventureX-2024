@@ -5,6 +5,7 @@ import { Input } from "./components/ui/input";
 import { Send, PenLine, Wand, Delete, X } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { DEFAULT_MODEL } from "./const";
+import { ConnectKitButton } from "connectkit";
 
 interface Message {
   content: string;
@@ -69,6 +70,7 @@ function App() {
 
       <header className={cn("flex justify-between p-6 px-10")}>
         <div className="text-white text-xl font-bold">丛生 · Cluster</div>
+        <ConnectKitButton />
       </header>
 
       <main className="w-full max-w-screen-md mx-auto my-6 text-white flex-1 px-4">
