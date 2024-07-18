@@ -16,6 +16,7 @@ import { DEFAULT_MODEL } from "./const";
 import { ConnectKitButton } from "connectkit";
 import { IPFS_GATEWAY, pinJSONToIPFS } from "./lib/pinata";
 import { Typewriter } from "./components/Typewriter";
+import { motion } from "framer-motion";
 
 interface Message {
   content: string;
@@ -124,102 +125,123 @@ function App() {
           </div>
         )}
         {!fetching && !writing && (
-          <div className="flex justify-center space-x-2">
-            <Button size="sm" onClick={() => setWriting(true)}>
-              <PenLine className="w-4 h-4 mr-2" />
-              Take a turn
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                sendMessage([...messages, { role: "user", content: "继续" }]);
-              }}
-            >
-              <Wand className="w-4 h-4 mr-2" />
-              Continue
-            </Button>
-            {messages[messages.length - 1]?.role === "assistant" && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button size="sm" onClick={() => setWriting(true)}>
+                <PenLine className="w-4 h-4 mr-2" />
+                Take a turn
+              </Button>
               <Button
                 size="sm"
-                onClick={async () => {
-                  const _messages = [...messages];
-                  console.log("🐞 => onClick={ => _messages:", _messages);
-                  _messages.splice(-1);
-                  console.log("🐞 => onClick={ => _messages:", _messages);
-                  setMessages(_messages);
-                  await sendMessage(_messages);
+                onClick={() => {
+                  sendMessage([...messages, { role: "user", content: "继续" }]);
                 }}
               >
-                <Repeat className="w-4 h-4 mr-2" />
-                Retry
+                <Wand className="w-4 h-4 mr-2" />
+                Continue
               </Button>
-            )}
-            {messages[messages.length - 1]?.role === "assistant" && (
-              <Button size="sm" onClick={() => {}}>
-                <Delete className="w-4 h-4 mr-2" />
-                Erase
-              </Button>
-            )}
-            {messages.length >= 2 && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => generateNFT()}
-              >
-                <FileCheck2 />
-              </Button>
-            )}
-          </div>
+              {messages[messages.length - 1]?.role === "assistant" && (
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    const retryMessages = [...messages];
+                    retryMessages.splice(-1);
+                    setMessages(retryMessages);
+                    await sendMessage(retryMessages);
+                  }}
+                >
+                  <Repeat className="w-4 h-4 mr-2" />
+                  Retry
+                </Button>
+              )}
+              {messages[messages.length - 1]?.role === "assistant" && (
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    const eraseMessages = [...messages];
+                    eraseMessages.splice(-2);
+                    setMessages(eraseMessages);
+                  }}
+                >
+                  <Delete className="w-4 h-4 mr-2" />
+                  Erase
+                </Button>
+              )}
+              {messages.length >= 2 && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => generateNFT()}
+                >
+                  <FileCheck2 />
+                </Button>
+              )}
+            </div>
+          </motion.div>
         )}
 
         {!fetching && writing && (
-          <div className="rounded-lg border bg-white bg-opacity-10 border-white p-2 mt-2">
-            <div className="flex space-x-2">
-              <Button
-                size="sm"
-                className="rounded-full"
-                onClick={() => setWriting(false)}
-              >
-                <X />
-              </Button>
-              <Button size="sm" onClick={() => setTurnType("do")}>
-                Do
-              </Button>
-              <Button size="sm" onClick={() => setTurnType("say")}>
-                Say
-              </Button>
-              <Button size="sm" onClick={() => setTurnType("story")}>
-                Story
-              </Button>
-              <Button size="sm" onClick={() => setTurnType("see")}>
-                See
-              </Button>
-            </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="rounded-lg border bg-white bg-opacity-10 border-white p-2 mt-2">
+              <div className="flex space-x-2">
+                <Button
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => setWriting(false)}
+                >
+                  <X />
+                </Button>
+                <Button size="sm" onClick={() => setTurnType("do")}>
+                  Do
+                </Button>
+                <Button size="sm" onClick={() => setTurnType("say")}>
+                  Say
+                </Button>
+                <Button size="sm" onClick={() => setTurnType("story")}>
+                  Story
+                </Button>
+                <Button size="sm" onClick={() => setTurnType("see")}>
+                  See
+                </Button>
+              </div>
 
-            <div className="flex items-center space-x-2 mt-2">
-              <Input
-                className="text-white"
-                ref={inputRef}
-                placeholder={TurnPlaceholder[turnType]}
-                onChange={(e) => setInput(e.target.value)}
-              />
-
-              <Button size="sm">
-                <Send
-                  onClick={async () => {
-                    await sendMessage([
-                      ...messages,
-                      { role: "user", content: input },
-                    ]);
-
-                    if (inputRef.current) {
-                      inputRef.current.value = "";
-                    }
-                  }}
+              <div className="flex items-center space-x-2 mt-2">
+                <Input
+                  className="text-white"
+                  ref={inputRef}
+                  placeholder={TurnPlaceholder[turnType]}
+                  onChange={(e) => setInput(e.target.value)}
                 />
-              </Button>
+
+                <Button size="sm">
+                  <Send
+                    onClick={async () => {
+                      if (input.trim() === "") return;
+
+                      await sendMessage([
+                        ...messages,
+                        { role: "user", content: input },
+                      ]);
+
+                      if (inputRef.current) {
+                        inputRef.current.value = "";
+                      }
+                    }}
+                  />
+                </Button>
+              </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </section>
 
