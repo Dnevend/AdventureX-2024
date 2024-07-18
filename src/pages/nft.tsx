@@ -3,8 +3,7 @@ import { cn } from "@/lib/utils";
 import { Message } from "@/types/type";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-
-const IPFS_GATEWAY = "https://ipfs.io/ipfs/";
+import { IPFS_GATEWAY } from "@/lib/pinata";
 
 const NFT = () => {
   const { hash } = useParams() as { hash: string };
