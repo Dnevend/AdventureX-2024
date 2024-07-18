@@ -5,6 +5,7 @@ import Layout from "@/layout";
 import App from "@/App";
 import AI from "@/pages/ai";
 import NFTs from "@/pages/nfts";
+import NFT from "@/pages/nft";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,7 @@ const router = createBrowserRouter([
       { path: "/", element: <App /> },
       { path: "/ai", element: <AI /> },
       { path: "/nfts", element: <NFTs /> },
+      { path: "/nft/:hash", element: <NFT /> },
     ],
   },
 ]);

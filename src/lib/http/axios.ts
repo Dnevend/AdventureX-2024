@@ -91,4 +91,4 @@ export class Http {
     }
 }
 
-export default new Http({ timeout: 30000 })
+export default new Http({})

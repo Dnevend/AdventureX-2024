@@ -17,10 +17,15 @@ import ABI from "@/lib/abis/NFTFactory.json";
 import { injected } from "wagmi/connectors";
 import { cn } from "@/lib/utils";
 import { useEnterKeyListener } from "@/hooks/useEnterKeyListener";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useNavigate } from "react-router-dom";
 
 function AI() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [turnType, setTurnType] = useState<TurnType>("do");
-  const [fetching, setFetching] = useState<boolean>(false);
+  const [busying, setBusying] = useState<boolean>(false);
   const [writing, setWriting] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [messages, setMessages] = useState<Message[]>([
@@ -37,7 +42,7 @@ function AI() {
 
   const sendMessage = useCallback(async (messages: Message[]) => {
     try {
-      setFetching(true);
+      setBusying(true);
 
       const { data } = await http.post<ModelResponse>(
         "/api/paas/v4/chat/completions",
@@ -52,7 +57,7 @@ function AI() {
         setMessages([...messages, data.choices[0].message]);
       }
     } finally {
-      setFetching(false);
+      setBusying(false);
     }
   }, []);
 
@@ -87,18 +92,31 @@ function AI() {
   useEnterKeyListener(() => sendCustomMessage());
 
   const generateNFT = async () => {
-    if (!isConnected) {
-      await connectAsync({ connector: injected() });
+    try {
+      setBusying(true);
+      if (!isConnected) {
+        await connectAsync({ connector: injected() });
+      }
+      const res: { IpfsHash: string } = await pinJSONToIPFS(messages);
+      console.log("🐞 => onUploadIPFS => res:", IPFS_GATEWAY + res.IpfsHash);
+      const txRes = await writeContractAsync({
+        address: CONTRACE_ADDRESS,
+        abi: ABI,
+        functionName: "createNFT",
+        args: [address, res.IpfsHash],
+      });
+      console.log("🐞 => generateNFT => txRes:", txRes);
+      toast({
+        title: "NFT已生成",
+        action: (
+          <ToastAction altText="View" onClick={() => navigate("/nfts")}>
+            View
+          </ToastAction>
+        ),
+      });
+    } finally {
+      setBusying(false);
     }
-    const res: { IpfsHash: string } = await pinJSONToIPFS(messages);
-    console.log("🐞 => onUploadIPFS => res:", IPFS_GATEWAY + res.IpfsHash);
-    const txRes = await writeContractAsync({
-      address: CONTRACE_ADDRESS,
-      abi: ABI,
-      functionName: "createNFT",
-      args: [address, res.IpfsHash],
-    });
-    console.log("🐞 => generateNFT => txRes:", txRes);
   };
 
   return (
@@ -136,7 +154,7 @@ function AI() {
       </main>
 
       <section className="w-full max-w-screen-md mx-auto p-6">
-        {fetching && (
+        {busying && (
           <div className="flex space-x-2 justify-center items-center">
             <span className="sr-only">Loading...</span>
             <div className="h-4 w-4 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
@@ -144,7 +162,7 @@ function AI() {
             <div className="h-4 w-4 bg-white rounded-full animate-bounce"></div>
           </div>
         )}
-        {!fetching && !writing && (
+        {!busying && !writing && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -175,7 +193,7 @@ function AI() {
           </motion.div>
         )}
 
-        {!fetching && writing && (
+        {!busying && writing && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
