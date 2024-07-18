@@ -5,10 +5,10 @@ import { Input } from "./ui/input";
 import { forwardRef } from "react";
 
 const TurnPlaceholder: Record<TurnType, string> = {
-  do: "What do you do?",
-  say: "What do you say?",
-  story: "What happens next?",
-  see: "What do you see?",
+  do: "你做了什么?",
+  say: "你说了什么?",
+  story: "接下来发生了什么?",
+  see: "你看见了什么?",
 };
 
 export const WriteBar = forwardRef<

@@ -15,6 +15,7 @@ import { WriteBar } from "@/components/WriteBar";
 import { useAccount, useConnect, useWriteContract } from "wagmi";
 import ABI from "@/lib/abis/NFTFactory.json";
 import { injected } from "wagmi/connectors";
+import { cn } from "@/lib/utils";
 
 function AI() {
   const [turnType, setTurnType] = useState<TurnType>("do");
@@ -76,9 +77,17 @@ function AI() {
       <main className="w-full max-w-screen-md mx-auto text-white flex-1 px-4 pt-24">
         <div className="flex flex-col gap-2">
           {messages.map((msg) => {
-            if (msg.role === "user" && !msg.content.startsWith(":")) {
+            if (msg.role === "user" && msg.content !== "续写") {
               return (
-                <p className="indent-8 hover:underline hover:decoration-dotted">
+                <p
+                  className={cn(
+                    "indent-8 hover:underline hover:decoration-dotted text-gray-300",
+                    {
+                      "underline decoration-wavy":
+                        msg.content !== AI_USER_PROMPT,
+                    }
+                  )}
+                >
                   {msg.content}
                 </p>
               );
@@ -117,7 +126,7 @@ function AI() {
               generateNFTVisible={messages.length >= 2}
               onTakeATurn={() => setWriting(true)}
               onContinue={() => {
-                sendMessage([...messages, { role: "user", content: ":继续" }]);
+                sendMessage([...messages, { role: "user", content: "续写" }]);
               }}
               onRetry={async () => {
                 const retryMessages = [...messages];
@@ -151,10 +160,30 @@ function AI() {
 
                 if (inputRef.current.value.trim() === "") return;
 
-                await sendMessage([
+                let content = "";
+
+                const value = inputRef.current.value;
+                switch (turnType) {
+                  case "do":
+                    content = `你${value}`;
+                    break;
+                  case "say":
+                    content = `你说:“${value}”`;
+                    break;
+                  case "see":
+                    content = `你看见了${value}`;
+                    break;
+                  case "story":
+                    content = value;
+                    break;
+                }
+
+                const newMsg: Message[] = [
                   ...messages,
-                  { role: "user", content: inputRef.current.value },
-                ]);
+                  { role: "user", content },
+                ];
+                setMessages(newMsg);
+                await sendMessage(newMsg);
 
                 inputRef.current.value = "";
               }}
