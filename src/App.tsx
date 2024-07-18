@@ -15,6 +15,7 @@ import { Button } from "./components/ui/button";
 import { DEFAULT_MODEL } from "./const";
 import { ConnectKitButton } from "connectkit";
 import { IPFS_GATEWAY, pinJSONToIPFS } from "./lib/pinata";
+import { Typewriter } from "./components/Typewriter";
 
 interface Message {
   content: string;
@@ -103,9 +104,10 @@ function App() {
           {messages.map((msg) => {
             if (msg.role === "assistant") {
               return (
-                <p className="indent-8 hover:underline hover:decoration-dotted">
-                  {msg.content}
-                </p>
+                <Typewriter
+                  className="indent-8 hover:underline hover:decoration-dotted"
+                  text={msg.content}
+                />
               );
             }
           })}
