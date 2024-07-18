@@ -36,9 +36,9 @@ const NFT = () => {
         <Link
           to={`${IPFS_GATEWAY}${hash}`}
           target="_blank"
-          className="relative z-10"
+          className="relative z-10 text-wrap break-all"
         >
-          <h1 className="text-white text-xl text-center break-words">{hash}</h1>
+          <h1 className="text-white text-xl text-center">{hash}</h1>
         </Link>
         {fetching && (
           <div className="flex space-x-2 my-8 justify-center items-center">
