@@ -47,7 +47,7 @@ const NFTs = () => {
   const tokenIDs = (ownerTokens ?? []) as bigint[];
 
   return (
-    <div className="mt-24 py-8 mx-auto max-w-screen-md">
+    <div className="py-8 mx-auto min-h-screen max-w-screen-md flex flex-col justify-center">
       {isFetching && (
         <div className="flex space-x-2 my-8 justify-center items-center">
           <span className="sr-only">Loading...</span>
@@ -64,7 +64,7 @@ const NFTs = () => {
       </div>
 
       {!isFetching && tokenIDs.length === 0 && (
-        <div className="flex flex-col items-center mt-2">
+        <div className="flex flex-col gap-2 items-center my-2">
           <BookDashed className="text-white h-8 w-8" />
           <p className="text-white text-xl">You has no NFTs</p>
         </div>
