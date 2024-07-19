@@ -47,7 +47,7 @@ const NFTs = () => {
   const tokenIDs = (ownerTokens ?? []) as bigint[];
 
   return (
-    <div className="py-8 mx-auto min-h-screen max-w-screen-md flex flex-col justify-center">
+    <div className="py-8 mx-auto min-h-screen max-w-screen-lg flex flex-col justify-center">
       {isFetching && (
         <div className="flex space-x-2 my-8 justify-center items-center">
           <span className="sr-only">Loading...</span>

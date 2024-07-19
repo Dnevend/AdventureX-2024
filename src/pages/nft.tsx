@@ -4,6 +4,12 @@ import { Message } from "@/types/type";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { IPFS_GATEWAY } from "@/lib/pinata";
+import { motion } from "framer-motion";
+
+const FADE_DOWN_ANIMATION_VARIANTS = {
+  hidden: { opacity: 0, y: -10 },
+  show: { opacity: 1, y: 0, transition: { type: "spring" } },
+};
 
 const NFT = () => {
   const { hash } = useParams() as { hash: string };
@@ -31,13 +37,32 @@ const NFT = () => {
   return (
     <>
       <div className="fixed top-0 w-full h-36 bg-gradient-to-b from-slate-950 to-transparent" />
-      <div className="mt-24 mx-auto max-w-screen-md px-4">
+
+      <motion.div
+        initial="hidden"
+        animate="show"
+        viewport={{ once: true }}
+        variants={{
+          hidden: {},
+          show: {
+            transition: {
+              staggerChildren: 0.15,
+            },
+          },
+        }}
+        className="mt-24 mx-auto max-w-screen-md px-4"
+      >
         <Link
           to={`${IPFS_GATEWAY}${hash}`}
           target="_blank"
           className="relative z-10 text-wrap break-all"
         >
-          <h1 className="text-white text-xl text-center">{hash}</h1>
+          <motion.h1
+            variants={FADE_DOWN_ANIMATION_VARIANTS}
+            className="text-white text-xl text-center"
+          >
+            {hash}
+          </motion.h1>
         </Link>
         {fetching && (
           <div className="flex space-x-2 my-8 justify-center items-center">
@@ -52,7 +77,8 @@ const NFT = () => {
           {messages.map((msg) => {
             if (msg.role === "user" && msg.content !== "续写") {
               return (
-                <p
+                <motion.p
+                  variants={FADE_DOWN_ANIMATION_VARIANTS}
                   className={cn(
                     "indent-8 hover:underline hover:decoration-dotted text-white",
                     {
@@ -62,19 +88,22 @@ const NFT = () => {
                   )}
                 >
                   {msg.content}
-                </p>
+                </motion.p>
               );
             }
             if (msg.role === "assistant") {
               return (
-                <p className="indent-8 hover:underline hover:decoration-dotted text-white">
+                <motion.p
+                  variants={FADE_DOWN_ANIMATION_VARIANTS}
+                  className="indent-8 hover:underline hover:decoration-dotted text-white"
+                >
                   {msg.content}
-                </p>
+                </motion.p>
               );
             }
           })}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
