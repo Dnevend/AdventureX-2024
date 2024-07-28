@@ -1,6 +1,6 @@
 # 丛生·Cluster - AdventureX2024
 
-[访问 https://adventure-cluster.pages.dev/](https://adventure-cluster.pages.dev/)
+[https://adventure-cluster.pages.dev/](https://adventure-cluster.pages.dev/)
 
 > 丛生Cluster是一个创作者聚合平台，此次我们展示的是它最原生的一颗种子，我们从做好一个故事的世界观开始。
 《仿生人会杀死电子羊吗》
@@ -14,6 +14,10 @@
 基于最初原点“生长”出来的剧情在经过可视化处理后很有可能是一个立体的形态！
 跳脱出原本的线性叙事，玩家共同创作，无数种可能性，就像平行宇宙一样！
 通过AI的互动叙事和区块链赋能共创经济，我们期待形成一个良性循环的共创者生态和社区，创作者之间更加紧密的链接，一同享受创作的乐趣。
+
+## 项目汇总
+
+- [Github 仓库](https://github.com/China-Chris/adventure-x-Cluster-Summary)
 
 ## Stacks
 
