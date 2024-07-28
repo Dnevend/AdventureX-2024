@@ -15,9 +15,10 @@
 跳脱出原本的线性叙事，玩家共同创作，无数种可能性，就像平行宇宙一样！
 通过AI的互动叙事和区块链赋能共创经济，我们期待形成一个良性循环的共创者生态和社区，创作者之间更加紧密的链接，一同享受创作的乐趣。
 
-## 项目汇总
+## 项目链接
 
-- [Github 仓库](https://github.com/China-Chris/adventure-x-Cluster-Summary)
+- [Github 仓库汇总](https://github.com/China-Chris/adventure-x-Cluster-Summary)
+- [活动获奖结果](https://adventurex.feishu.cn/wiki/VWUKwN2BEiu9JgkowescuTQOnSf?from=from_copylink)
 
 ## Stacks
 
